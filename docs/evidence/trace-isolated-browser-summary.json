@@ -4,11 +4,11 @@
     "version": "0.1.0",
     "id": "nmmlhlhpfpfiehpoccmloghalfgfmaol",
     "manifestSha256": "597cdaf0d6e27fff6b9b34510156ad663ed2e3e251ca6f8cd918c27d24a5ebf6",
-    "fileSetSha256": "08f4234e22f16fb9ffaf1c1b745476d249b5889f628b579c318f01a69baeb4a6",
+    "fileSetSha256": "1d5a9c44415678c9c3e923287fc6bd18d5d65199a5039f46ab0fdcfed4e38114",
     "fileCount": 18
   },
   "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36",
-  "time": "2026-11-24T16:11:33.913Z",
+  "time": "2026-11-24T16:31:05.832Z",
   "cases": [
     {
       "theme": "light",
@@ -16,7 +16,19 @@
       "requests": [
         "GET https://chatgpt.com/c/7b9816ed-2917-4839-bc7e-3c7724944e0d",
         "GET https://chatgpt.com/backend-api/conversation/7b9816ed-2917-4839-bc7e-3c7724944e0d"
-      ]
+      ],
+      "nativeMenuOrder": [
+        "Pin",
+        "Rename",
+        "Share",
+        "Lock",
+        "Move to project",
+        "Trace",
+        "Archive",
+        "Delete"
+      ],
+      "nativeMenuExitDelayMs": 120,
+      "activityCloseFocusStableMs": 400
     },
     {
       "theme": "dark",
@@ -24,7 +36,19 @@
       "requests": [
         "GET https://chatgpt.com/c/7b9816ed-2917-4839-bc7e-3c7724944e0d",
         "GET https://chatgpt.com/backend-api/conversation/7b9816ed-2917-4839-bc7e-3c7724944e0d"
-      ]
+      ],
+      "nativeMenuOrder": [
+        "Pin",
+        "Rename",
+        "Share",
+        "Lock",
+        "Move to project",
+        "Trace",
+        "Archive",
+        "Delete"
+      ],
+      "nativeMenuExitDelayMs": 120,
+      "activityCloseFocusStableMs": 400
     }
   ],
   "screenshots": [
