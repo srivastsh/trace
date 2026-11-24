@@ -1,0 +1,137 @@
+{
+  "production": {
+    "name": "Trace",
+    "version": "0.1.0",
+    "id": "nmmlhlhpfpfiehpoccmloghalfgfmaol",
+    "manifestSha256": "597cdaf0d6e27fff6b9b34510156ad663ed2e3e251ca6f8cd918c27d24a5ebf6",
+    "fileSetSha256": "08f4234e22f16fb9ffaf1c1b745476d249b5889f628b579c318f01a69baeb4a6",
+    "fileCount": 18
+  },
+  "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/158.0.0.0 Safari/537.36",
+  "time": "2026-11-24T16:12:24.929Z",
+  "metric": "Input event to second animation frame. Renderer script time is reported separately.",
+  "fixtureTurns": 1200,
+  "virtualVisibleTurns": 24,
+  "runs": [
+    {
+      "mode": "legacy",
+      "extension": false,
+      "typing": {
+        "medianMs": 9.2,
+        "p95Ms": 15.7,
+        "samples": 36
+      },
+      "scroll": {
+        "medianMs": 8.1,
+        "p95Ms": 9.1,
+        "samples": 36
+      },
+      "totalScriptMs": 7.08
+    },
+    {
+      "mode": "legacy",
+      "extension": true,
+      "typing": {
+        "medianMs": 15.2,
+        "p95Ms": 16.2,
+        "samples": 36
+      },
+      "scroll": {
+        "medianMs": 8,
+        "p95Ms": 10.6,
+        "samples": 36
+      },
+      "totalScriptMs": 11.07
+    },
+    {
+      "mode": "legacy",
+      "extension": true,
+      "typing": {
+        "medianMs": 14.9,
+        "p95Ms": 15.9,
+        "samples": 36
+      },
+      "scroll": {
+        "medianMs": 8.1,
+        "p95Ms": 9.2,
+        "samples": 36
+      },
+      "totalScriptMs": 10.55
+    },
+    {
+      "mode": "legacy",
+      "extension": false,
+      "typing": {
+        "medianMs": 14.6,
+        "p95Ms": 15.9,
+        "samples": 36
+      },
+      "scroll": {
+        "medianMs": 8.1,
+        "p95Ms": 8.9,
+        "samples": 36
+      },
+      "totalScriptMs": 8.27
+    },
+    {
+      "mode": "virtualized",
+      "extension": false,
+      "typing": {
+        "medianMs": 7.3,
+        "p95Ms": 16,
+        "samples": 36
+      },
+      "scroll": {
+        "medianMs": 8.1,
+        "p95Ms": 8.8,
+        "samples": 36
+      },
+      "totalScriptMs": 19.57
+    },
+    {
+      "mode": "virtualized",
+      "extension": true,
+      "typing": {
+        "medianMs": 7.7,
+        "p95Ms": 15.4,
+        "samples": 36
+      },
+      "scroll": {
+        "medianMs": 8.4,
+        "p95Ms": 9.4,
+        "samples": 36
+      },
+      "totalScriptMs": 44.49
+    },
+    {
+      "mode": "virtualized",
+      "extension": true,
+      "typing": {
+        "medianMs": 10.2,
+        "p95Ms": 15.6,
+        "samples": 36
+      },
+      "scroll": {
+        "medianMs": 8.1,
+        "p95Ms": 10.3,
+        "samples": 36
+      },
+      "totalScriptMs": 47.87
+    },
+    {
+      "mode": "virtualized",
+      "extension": false,
+      "typing": {
+        "medianMs": 14.4,
+        "p95Ms": 16.3,
+        "samples": 36
+      },
+      "scroll": {
+        "medianMs": 8.4,
+        "p95Ms": 10,
+        "samples": 36
+      },
+      "totalScriptMs": 18.98
+    }
+  ]
+}

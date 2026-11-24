@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trace isolated browser verification</title>
+  <link rel="stylesheet" href="qa.css">
+  <script type="module" src="qa.js"></script>
+</head>
+<body>
+  <main>
+    <h1>Trace isolated browser verification</h1>
+    <p>Load the unchanged Trace release in the signed-out Trace QA browser profile before running. The runner opens temporary synthetic fixture tabs and removes them after the checks.</p>
+    <div class="actions">
+      <button id="run" type="button">Run browser checks</button>
+      <a id="report" hidden download="trace-isolated-browser-report.json">Download JSON report</a>
+    </div>
+    <div class="actions">
+      <button id="benchmark" type="button">Measure typing and scroll</button>
+      <a id="benchmark-report" hidden download="trace-host-benchmark.json">Download benchmark</a>
+    </div>
+    <div class="actions">
+      <button id="manual" type="button">Open fixture for manual workflows</button>
+      <button id="stop" type="button" disabled>Close manual fixture</button>
+    </div>
+    <div id="manual-capture-controls" class="actions" hidden>
+      <button id="light" type="button">Use light fixture theme</button>
+      <button id="dark" type="button">Use dark fixture theme</button>
+      <button id="capture-sample" type="button">Add capture checkpoint</button>
+      <button id="revoked-sample" type="button">Add saving-off checkpoint</button>
+    </div>
+    <p id="status" role="status" aria-live="polite">Ready</p>
+    <ol id="results"></ol>
+    <div id="screenshots"></div>
+  </main>
+</body>
+</html>

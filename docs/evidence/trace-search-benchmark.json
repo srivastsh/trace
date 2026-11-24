@@ -1,0 +1,59 @@
+{
+  "scope": "Standalone in-memory search implementation. Browser worker, IndexedDB hydration and UI debounce timing are excluded.",
+  "machine": {
+    "platform": "darwin",
+    "release": "25.6.0",
+    "arch": "arm64",
+    "cpu": "Apple M1 Pro",
+    "node": "v22.12.0"
+  },
+  "fixtureMessages": 50000,
+  "inMemoryIndexBuildMs": 1392.52,
+  "warm": {
+    "medianMs": 23.93,
+    "p95Ms": 75.55,
+    "samples": 96
+  },
+  "queries": {
+    "camera prototype": {
+      "medianMs": 70.3,
+      "p95Ms": 85.42,
+      "samples": 12
+    },
+    "\"asset decoding\"": {
+      "medianMs": 27.1,
+      "p95Ms": 47.49,
+      "samples": 12
+    },
+    "\"low-memory device\"": {
+      "medianMs": 16.56,
+      "p95Ms": 19.89,
+      "samples": 12
+    },
+    "trim.top": {
+      "medianMs": 28.39,
+      "p95Ms": 38.48,
+      "samples": 12
+    },
+    "revision": {
+      "medianMs": 18.87,
+      "p95Ms": 35.13,
+      "samples": 12
+    },
+    "unit 24523": {
+      "medianMs": 44.27,
+      "p95Ms": 76.36,
+      "samples": 12
+    },
+    "no-fixture-matches": {
+      "medianMs": 15.95,
+      "p95Ms": 26.28,
+      "samples": 12
+    },
+    "(unfiltered)": {
+      "medianMs": 11.71,
+      "p95Ms": 23.18,
+      "samples": 12
+    }
+  }
+}
