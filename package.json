@@ -1,0 +1,27 @@
+{
+  "name": "trace-local",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/build.mjs --watch",
+    "check": "tsc --noEmit",
+    "test": "vitest run",
+    "build": "node scripts/build.mjs",
+    "package": "node scripts/package.mjs",
+    "qa": "node --test tests/integration/*.test.mjs tests/host/*.test.mjs"
+  },
+  "dependencies": {
+    "idb": "8.0.3",
+    "minisearch": "7.2.0",
+    "preact": "10.27.2"
+  },
+  "devDependencies": {
+    "@types/chrome": "0.1.30",
+    "fake-indexeddb": "6.2.4",
+    "playwright": "1.58.2",
+    "typescript": "6.0.3",
+    "vite": "8.0.10",
+    "vitest": "4.1.6"
+  }
+}

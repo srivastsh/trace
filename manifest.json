@@ -1,0 +1,63 @@
+{
+  "manifest_version": 3,
+  "name": "Trace",
+  "version": "0.1.0",
+  "description": "Inspect reported reply activity and keep selected ChatGPT conversations on this device.",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlQDBqjJOUHz6Q6MG2b6ODDqL+CWQn4TcgcJDoB9fw6Syl3cxuApDBckXbp8j3SdgshIpRTW9F+7rSv4rDFLiJnwLFnHNBkiQtbhm7/hue8bcqfj7jsbaeWuIU8PJiDAgxPvFpJo9aXxD6Y6KuPVj/ZPIdW4MYAYDXhPEfsU2YCHUHNF0XKU0FtR+oXG5REs0iNbLnMnOUq/HFoet7/0Ep8Ft4W/OszPRx5CNFDNn+fC1aFaPtvYMov4IHZvdIs2xmDGoApgIAjyQH6YefdGYv39q0qtecmkiQ0mdS1U6nVuXwbSmUImigJB+89KcCyZTCjW9INs+U35a6hBtMsnROQIDAQAB",
+  "minimum_chrome_version": "120",
+  "incognito": "not_allowed",
+  "permissions": [
+    "storage",
+    "alarms"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Trace"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "options_ui": {
+    "page": "library.html#settings",
+    "open_in_tab": true
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://chatgpt.com/*"
+      ],
+      "js": [
+        "observer.js"
+      ],
+      "world": "MAIN",
+      "run_at": "document_start",
+      "all_frames": false
+    },
+    {
+      "matches": [
+        "https://chatgpt.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "host.css"
+      ],
+      "world": "ISOLATED",
+      "run_at": "document_start",
+      "all_frames": false
+    }
+  ],
+  "commands": {
+    "show-activity": {
+      "description": "Show current reply activity"
+    },
+    "open-library": {
+      "description": "Open the local library"
+    }
+  },
+  "content_security_policy": {
+    "extension_pages": "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; frame-src 'none'; form-action 'none'"
+  }
+}

@@ -1,0 +1,4 @@
+Trace 0.1.0 includes an attributed copy of selected Modus v3.9.5 sources and tests
+from https://github.com/aryan-astra/Modus/tree/e56ea7a1c164932f6ddaf522faecf94f2addbdf8
+Modus is licensed under the MIT License. Its original notice is reproduced in LICENSE.
+The bundled dependency licenses accompany this distribution.
