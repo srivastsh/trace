@@ -72,10 +72,14 @@ test('Activity shows the resolved reply facts, preserves zero, and never replays
   const page = await browser.context.newPage();
   await page.goto(chatURL());
   let menu = await openTraceMenu(page);
+  await page.evaluate(() => window.traceFixture.deferNativeClose(120));
   await menu.getByRole('menuitem', { name: 'Activity', exact: true }).click();
   let activity = page.getByRole('dialog', { name: 'Activity', exact: true });
   await activity.waitFor();
   assert.match(await activity.innerText(), /waiting|unavailable|not reported/i);
+  await page.waitForTimeout(400);
+  assert.ok(await activity.getByRole('button', { name: 'Close Activity', exact: true })
+    .evaluate(element => document.activeElement === element));
   await page.keyboard.press('Escape');
   await activity.waitFor({ state: 'hidden' });
 

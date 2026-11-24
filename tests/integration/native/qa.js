@@ -366,9 +366,13 @@ async function fixtureChecks(theme, report) {
     for (const label of ['Activity', 'Save chat', 'Export chat', 'Prepare handoff', 'Local library', 'Settings']) {
       await driver.element(`${submenuSelector} ${traceSelector}`, label);
     }
+    await driver.evaluate(() => window.traceFixture.deferNativeClose(120));
     await driver.click(`${submenuSelector} ${traceSelector}`, 'Activity');
     const empty = await driver.element(activitySelector);
     assert(/waiting|unavailable|not reported/i.test(empty.text), 'Activity invented a fact before observation.');
+    await sleep(400);
+    assert(await driver.evaluate(selector => document.activeElement.matches(`${selector} [data-trace-close]`), activitySelector),
+      'Activity Close did not retain focus 400 ms after launch.');
     await driver.escape();
     await waitFor(async () => !(await driver.elements(activitySelector)).length, 'Escape did not dismiss Activity.');
     assert(await driver.evaluate(selector => document.activeElement.matches(selector), headingSelector), 'Escape did not return focus to the conversation trigger.');
@@ -402,7 +406,7 @@ async function fixtureChecks(theme, report) {
       stageTab = await waitFor(async () => (await stages())[0], 'A trusted Save chat click did not open a production-origin review.');
     }
     driver.assertNetwork();
-    return { requests: driver.requestLog, nativeMenuOrder: nativeOrder };
+    return { requests: driver.requestLog, nativeMenuOrder: nativeOrder, nativeMenuExitDelayMs: 120, activityCloseFocusStableMs: 400 };
   } finally {
     if (stageTab) await chrome.tabs.remove(stageTab.id).catch(() => {});
     await driver.close();
