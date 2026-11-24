@@ -1,4 +1,12 @@
-export type Action = 'activity' | 'save' | 'save-message' | 'export' | 'handoff' | 'library' | 'settings' | 'pause';
+export type Action =
+  | 'activity'
+  | 'save'
+  | 'save-message'
+  | 'export'
+  | 'handoff'
+  | 'library'
+  | 'settings'
+  | 'pause';
 export interface ActionContext {
   epoch: number;
   providerId: string;
@@ -19,16 +27,32 @@ export interface Metric<T = number> {
   status: 'reported' | 'observed' | 'derived';
 }
 export interface Quota {
-  feature: string; scope: string; observedAt: number;
-  remaining?: Metric; used?: Metric; total?: Metric; resetSeconds?: Metric; deadline?: Metric;
+  feature: string;
+  scope: string;
+  observedAt: number;
+  remaining?: Metric;
+  used?: Metric;
+  total?: Metric;
+  resetSeconds?: Metric;
+  deadline?: Metric;
 }
 export interface ActivitySnapshot {
   state: 'waiting' | 'streaming' | 'reported' | 'partial' | 'unavailable';
-  replyId?: string; model?: Metric<string>; displayModel?: Metric<string>;
-  requestedModel?: Metric<string>; conversationDefault?: Metric<string>; accountDefault?: Metric<string>;
-  input?: Metric; output?: Metric; effectiveWindow?: Metric; catalogMaximum?: Metric;
-  comparable: boolean; comparableReason?: string; quotas: Quota[];
-  observedAt?: number; adapterVersion: string;
+  replyId?: string;
+  model?: Metric<string>;
+  displayModel?: Metric<string>;
+  requestedModel?: Metric<string>;
+  conversationDefault?: Metric<string>;
+  accountDefault?: Metric<string>;
+  input?: Metric;
+  output?: Metric;
+  effectiveWindow?: Metric;
+  catalogMaximum?: Metric;
+  comparable: boolean;
+  comparableReason?: string;
+  quotas: Quota[];
+  observedAt?: number;
+  adapterVersion: string;
 }
 export interface CapturedMessage {
   id: string;
@@ -55,11 +79,26 @@ export interface Projection {
   aliasFrom?: string;
 }
 export interface Stage {
-  id: string; action: 'save' | 'save-message' | 'export' | 'handoff'; projection: Projection;
-  messageId?: string; createdAt: number; expiresAt: number;
+  id: string;
+  action: 'save' | 'save-message' | 'export' | 'handoff';
+  projection: Projection;
+  messageId?: string;
+  createdAt: number;
+  expiresAt: number;
 }
-export interface DocTarget { tabId: number; documentId: string; epoch: number }
-export interface HostActionRequest { action: Action; context?: ActionContext; messageId?: string }
+export interface DocTarget {
+  tabId: number;
+  documentId: string;
+  epoch: number;
+}
+export interface HostActionRequest {
+  action: Action;
+  context?: ActionContext;
+  messageId?: string;
+}
 export interface CaptureStatus {
-  enabled: boolean; generation: number; bound: boolean; paused: boolean;
+  enabled: boolean;
+  generation: number;
+  bound: boolean;
+  paused: boolean;
 }
