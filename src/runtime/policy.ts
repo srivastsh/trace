@@ -29,7 +29,7 @@ export function providerAt(value: unknown): string | null {
   try {
     const url = new URL(value);
     if (url.origin !== PRODUCT.origin || url.username || url.password) return null;
-    const match = /^\/(?:g\/[^/]+\/)?c\/([A-Za-z0-9_-]{1,160})\/?$/.exec(url.pathname);
+    const match = /^\/(?:g\/[A-Za-z0-9_-]+\/)?c\/([A-Za-z0-9_-]{1,160})\/?$/.exec(url.pathname);
     return match?.[1] ?? null;
   } catch {
     return null;
@@ -220,7 +220,7 @@ export function minimalProjection(p: Projection): Projection {
     ...p,
     sourceUrl: p.providerId.startsWith('local:')
       ? PRODUCT.origin + '/'
-      : PRODUCT.origin + '/c/' + encodeURIComponent(p.providerId),
+      : PRODUCT.origin + new URL(p.sourceUrl).pathname,
     messages: p.messages.map((m) => {
       if (!m.activity) return m;
       const { accountDefault: _account, quotas: _quotas, ...reply } = m.activity;

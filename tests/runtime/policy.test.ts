@@ -118,6 +118,10 @@ describe('runtime authority', () => {
       messages: [{ ...p.messages[0], activity: a }],
     });
     expect(reduced.sourceUrl).toBe(p.sourceUrl);
+    const projectSource = 'https://chatgpt.com/g/test-project/c/first-chat';
+    expect(minimalProjection({ ...p, sourceUrl: projectSource + '?session=private#extra' }).sourceUrl).toBe(
+      projectSource,
+    );
     expect(reduced.messages[0].activity?.quotas).toEqual([]);
     expect(reduced.messages[0].activity?.accountDefault).toBeUndefined();
     expect(activityOk({ ...a, raw: 'sensitive' })).toBe(false);
