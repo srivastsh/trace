@@ -2,14 +2,14 @@
 
 | Context | Input | Output and authority |
 | --- | --- | --- |
-| MAIN observer | Supported same-origin fetch responses on chatgpt.com | Size-limited, route-specific observations. Never sends requests, reads request bodies or writes extension storage. |
+| MAIN observer | Supported same-origin Fetch and XHR responses on chatgpt.com | Size-limited, route-specific observations. Never sends requests, reads request bodies or writes extension storage. |
 | Isolated content script | Validated page events, current rendered thread and trusted user gestures | Current-chat Activity, a native-menu adapter, short consent-gated capture batches, and reviewed one-time staging requests. |
 | MV3 service worker | Browser-provided sender origin, top-frame document identity and narrow RPC operations | One serialized mutation coordinator, session scope/leases, IDB commit fences, cleanup and trusted extension-page operations. |
 | Extension pages | User-selected collections, records, revisions, notes and import files | Local reader, search worker, explicit saves, backup/restore, documents and diagnostics. All rendering treats archive text as data. |
 
 ## Protocol and lifetime
 
-The observer monitors recognized history, turn, model and account/limit endpoint shapes. Its fetch wrapper returns the original promise and reads only a cloned supported response. The isolated receiver checks its own scope, sequence, schema and capture grant. A same-origin page can imitate a bridge message. A bridge event cannot grant consent, bind a document, open the archive, create a save intent or execute a privileged command.
+The observer monitors recognized history, turn, model and account/limit endpoint shapes. Its fetch wrapper returns the original promise and reads only a cloned supported response. XHR observes bounded uncompressed JSON with an explicit content length. SSE is supported on Fetch. The isolated receiver checks its own scope, sequence, schema and capture grant. A same-origin page can imitate a bridge message. A bridge event cannot grant consent, bind a document, open the archive, create a save intent or execute a privileged command.
 
 The worker distinguishes content scripts, the toolbar popup and the library by trusted sender metadata. A reviewed action carries the originating tab, browser document, navigation epoch, provider reference and selected branch or segment. An action in a stale tab fails. The popup uses a live top-frame receiver and requires the same selection at activation. An extension-page review has a single reader and an expiring commit lease.
 
@@ -24,3 +24,16 @@ Search indexes are disposable. The search worker reads paginated records on the 
 The only manifest permissions are storage and alarms. Static top-level content scripts match https://chatgpt.com/* in the MAIN and ISOLATED worlds. No host access to chat.openai.com is requested. The popup queries the current tab ID, and current-chat messages go to the top-frame receiver. Shortcuts ship without suggested key bindings. Toolbar, settings, search and archive operations work without a persistent background process.
 
 The header adapter recognizes a persistent conversation action trigger linked to the active menu, matches organization/destructive action structure, and leaves an unsupported surface alone. A reported model, token count or quota depends on the supported field and its source. Timing history, semantic search, PDF export, official ChatGPT export import and MCP are deferred.
+
+## Implementation references
+
+| Subject | Official reference |
+| --- | --- |
+| Toolchain and Node compatibility | [Vite guide](https://vite.dev/guide/) |
+| Extension views | [Preact v10 guide](https://preactjs.com/guide/v10/getting-started/) |
+| Storage and search dependencies | [idb](https://github.com/jakearchibald/idb), [MiniSearch](https://lucaong.github.io/minisearch/) |
+| Tests | [Vitest guide](https://vitest.dev/guide/), [Playwright Chromium extension testing](https://playwright.dev/docs/chrome-extensions) |
+| Scripting worlds and storage visibility | [Content scripts](https://developer.chrome.com/docs/extensions/develop/concepts/content-scripts), [Extension storage](https://developer.chrome.com/docs/extensions/reference/api/storage) |
+| Worker restarts and identity | [Service worker lifecycle](https://developer.chrome.com/docs/extensions/develop/concepts/service-workers/lifecycle), [Manifest public key](https://developer.chrome.com/docs/extensions/reference/manifest/key) |
+| Unpacked installation and Dia MV3 support | [Chrome installation workflow](https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world), [Dia MV2 retirement](https://www.diabrowser.com/changelog/mac/1-17-0) |
+

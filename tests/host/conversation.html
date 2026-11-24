@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en" data-theme="light" style="color-scheme: light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Miata Viewer</title>
+  <style>
+    :root { --surface:#fff; --sidebar:#f8f8f8; --text-primary:#161616; --text-secondary:#626262; --border-light:rgb(0 0 0 / 11%); --menu-hover:rgb(0 0 0 / 6%); font:14px/20px system-ui,sans-serif }
+    :root[data-theme="dark"] { --surface:#252525; --sidebar:#1b1b1b; --text-primary:#ececec; --text-secondary:#b9b9b9; --border-light:rgb(255 255 255 / 14%); --menu-hover:rgb(255 255 255 / 9%) }
+    * { box-sizing:border-box }
+    body { min-height:100vh; margin:0; background:var(--surface); color:var(--text-primary) }
+    button { color:inherit; border:0; border-radius:8px; background:transparent; padding:6px 9px; font:inherit; cursor:pointer }
+    button:hover, button:focus { background:var(--menu-hover) }
+    aside { position:fixed; top:0; left:0; width:205px; height:100vh; padding:18px 12px; background:var(--sidebar) }
+    .brand { font-weight:620; margin-bottom:20px }
+    .sidebar-chat { display:flex; justify-content:space-between; align-items:center; gap:4px }
+    header { margin-left:205px; height:58px; padding:10px 16px; display:flex; align-items:center; justify-content:space-between }
+    .header-actions { display:flex; align-items:center; gap:4px }
+    header .title { font-size:15px; font-weight:600 }
+    main { margin-left:205px; padding:32px 24px 130px }
+    #thread { max-width:710px; margin:auto }
+    article { margin-bottom:30px }
+    article:has([data-message-author-role="user"]) { margin-left:auto; max-width:72%; padding:5px 16px; border-radius:18px; background:var(--sidebar) }
+    article [aria-label="Message actions"] { margin-top:8px; display:flex; color:var(--text-secondary); gap:2px; opacity:0 }
+    article:is(:hover,:focus-within) [aria-label="Message actions"] { opacity:1 }
+    article [aria-label="Message actions"] > button { width:30px; height:30px; padding:3px }
+    p { margin-block:10px }
+    #composer { position:fixed; bottom:18px; width:min(710px,calc(100% - 252px)); left:calc(50% + 102px); transform:translateX(-50%); background:var(--surface); border:1px solid var(--border-light); border-radius:24px; padding:16px }
+    #prompt-textarea { min-height:24px; outline:none }
+    .fixture-menu { position:fixed; width:200px; padding:4px; border:1px solid var(--border-light); border-radius:14px; background:var(--surface); box-shadow:0 4px 18px rgb(0 0 0 / 14%) }
+    .fixture-native { display:flex; align-items:center; text-align:start; gap:9px; min-height:36px; width:100%; padding:6px 8px; outline:0 }
+    .fixture-native:focus { outline:1px solid var(--border-light); outline-offset:-1px }
+    .fixture-native svg { flex:none }
+    .fixture-native .chevron { margin-left:auto }
+    [role="separator"] { margin:4px 0; height:1px; background:var(--border-light) }
+    @media(max-width:660px) { aside{display:none} header,main{margin-left:0} #composer{width:calc(100% - 36px);left:50%} }
+  </style>
+</head>
+<body data-temporary-chat="false">
+  <aside aria-label="Navigation">
+    <div class="brand">ChatGPT</div>
+    <div class="sidebar-chat">
+      <span>Miata Viewer</span>
+      <button id="sidebar-actions" type="button" aria-label="Chat actions" aria-haspopup="menu" aria-controls="sidebar-menu" aria-expanded="false">•••</button>
+    </div>
+  </aside>
+  <header id="page-header">
+    <span class="title" data-testid="conversation-title">Miata Viewer</span>
+    <div class="header-actions">
+      <button type="button" id="share-chat">Share</button>
+      <button id="header-actions" data-testid="conversation-header-actions-menu" type="button" aria-label="Chat actions" aria-haspopup="menu" aria-controls="header-menu" aria-expanded="false">•••</button>
+    </div>
+  </header>
+  <main>
+    <div id="thread" data-testid="conversation-thread">
+      <article data-testid="conversation-turn-1">
+        <div data-message-author-role="user" data-message-id="question-1">
+          <div data-message-content><p>What should run off the rendering thread in the Miata viewer?</p></div>
+        </div>
+      </article>
+      <article data-testid="conversation-turn-2">
+        <div data-message-author-role="assistant" data-message-id="reply-1">
+          <div data-message-content>
+            <p>Keep asset decoding off the rendering thread.</p>
+            <p>Decode images on a worker and transfer the ready assets to the viewer.</p>
+            <pre><code class="language-js">  const roof = trim.top;</code></pre>
+            <p>The label ルーフ belongs beside café in this fixture.</p>
+          </div>
+        </div>
+        <div aria-label="Message actions">
+          <button type="button" data-testid="copy-turn-action-button" aria-label="Copy">▢</button>
+          <button type="button" aria-label="Good response">♡</button>
+          <button type="button" aria-label="More actions" id="message-actions" aria-haspopup="menu" aria-controls="message-menu" aria-expanded="false">•••</button>
+        </div>
+      </article>
+    </div>
+    <div id="composer"><div id="prompt-textarea" role="textbox" aria-label="Message" contenteditable="true"></div></div>
+  </main>
+  <div id="menu-portals"></div>
+  <script>
+    const portals = document.querySelector('#menu-portals')
+    const headerTrigger = document.querySelector('#header-actions')
+    const sidebarTrigger = document.querySelector('#sidebar-actions')
+    const messageTrigger = document.querySelector('#message-actions')
+    const paths = [
+      'M4 6h10L9 11v5m-4-4 4-1 4 1',
+      'm4 13 8-8 3 3-8 8H4z',
+      'M5 15h10v-4m-5 0V3m-4 4 4-4 4 4',
+      'M5 9h10v7H5zM7 9V7a3 3 0 0 1 6 0v2',
+      'M3 6h6l2 2h6v7H3z',
+      'M4 6h12v3H4zM5 9v8h10V9M8 12h4',
+      'M4 6h12M7 6V4h6v2M6 6v10h8V6'
+    ]
+    const rootActions = ['Pin', 'Rename', 'Share', 'Lock', 'Move to project', 'Archive', 'Delete']
+    const projectActions = ['Miata', 'Transit']
+    let active, nested
+    let typed = '', lastTypedAt = 0
+
+    function nativeButton(label, index, isSubmenu) {
+      const button = document.createElement('button')
+      button.className = 'fixture-native'
+      button.type = 'button'
+      button.tabIndex = -1
+      button.role = 'menuitem'
+      const svg = document.createElementNS('http://www.w3.org/2000/svg','svg')
+      for (const [attr, val] of Object.entries({viewBox:'0 0 20 20',width:'18',height:'18',fill:'none',stroke:'currentColor','stroke-width':'1.5','stroke-linecap':'round','stroke-linejoin':'round','aria-hidden':'true'})) svg.setAttribute(attr,val)
+      const path = document.createElementNS(svg.namespaceURI,'path')
+      path.setAttribute('d',paths[index % paths.length]); svg.append(path)
+      button.append(svg, document.createTextNode(label))
+      if (isSubmenu) {
+        button.setAttribute('aria-haspopup','menu')
+        button.setAttribute('aria-expanded','false')
+        button.setAttribute('aria-controls','move-menu')
+        const chevron = document.createElement('span'); chevron.className = 'chevron'; chevron.setAttribute('aria-hidden','true'); chevron.textContent = '›'
+        button.append(chevron)
+      }
+      button.addEventListener('click', () => {
+        if (isSubmenu) openNested(button)
+        else { document.body.dataset.lastNativeAction = label; closeMain(true) }
+      })
+      button.addEventListener('pointermove', event => { if (event.pointerType === 'mouse') button.focus({ preventScroll:true }) })
+      return button
+    }
+
+    function menuRoot(id, name, labels, related, isNested) {
+      const menu = document.createElement('div')
+      menu.id = id
+      menu.dataset.state = 'open'
+      menu.tabIndex = -1
+      menu.className = 'fixture-menu'
+      menu.role = 'menu'
+      menu.setAttribute('aria-label',name)
+      if (related.id) menu.setAttribute('aria-labelledby',related.id)
+      const buttons = labels.map((label, index) => nativeButton(label, index, label === 'Move to project'))
+      if (labels === rootActions) {
+        const ordinary = document.createElement('div'); ordinary.role = 'group'; ordinary.append(...buttons.slice(0,5))
+        const separator = document.createElement('div'); separator.role = 'separator'
+        const destructive = document.createElement('div'); destructive.role = 'group'; destructive.append(...buttons.slice(5))
+        menu.append(ordinary,separator,destructive)
+      } else menu.append(...buttons)
+      menu.addEventListener('keydown', event => {
+        if (event.target.closest('[role="menu"]') !== menu) return
+        const index = buttons.indexOf(event.target)
+        if (event.key === 'ArrowRight' && event.target.textContent?.includes('Move to project')) {
+          event.preventDefault(); openNested(event.target); return
+        }
+        if (event.key === 'ArrowLeft' && isNested) {
+          event.preventDefault(); closeNested(true); return
+        }
+        let next
+        if (event.key === 'ArrowDown') next = buttons[(index + 1) % buttons.length]
+        else if (event.key === 'ArrowUp') next = buttons[(index - 1 + buttons.length) % buttons.length]
+        else if (event.key === 'Home') next = buttons[0]
+        else if (event.key === 'End') next = buttons.at(-1)
+        else if (event.key.length === 1 && event.key !== ' ' && !event.metaKey && !event.ctrlKey && !event.altKey) {
+          const now = Date.now()
+          typed = now - lastTypedAt > 350 ? event.key : typed + event.key
+          lastTypedAt = now
+          next = buttons.find(button => button.textContent.toLowerCase().startsWith(typed.toLowerCase()))
+        }
+        if (next) { event.preventDefault(); next.focus({preventScroll:true}) }
+      })
+      const rect = related.getBoundingClientRect()
+      menu.style.left = (isNested ? Math.max(8,rect.left - 202) : Math.min(innerWidth - 204,Math.max(8,rect.right - 200))) + 'px'
+      menu.style.top = (isNested ? Math.min(innerHeight - 80,rect.top) : rect.bottom + 4) + 'px'
+      return { menu, buttons, related }
+    }
+
+    function openNested(related) {
+      if (nested) return
+      related.setAttribute('aria-expanded','true')
+      nested = menuRoot('move-menu','Move to project',projectActions,related,true)
+      portals.append(nested.menu)
+      nested.buttons[0].focus({preventScroll:true})
+    }
+    function closeNested(restore) {
+      if (!nested) return
+      const state = nested; nested = undefined
+      state.related.setAttribute('aria-expanded','false')
+      state.menu.remove()
+      if (restore) state.related.focus({preventScroll:true})
+    }
+    function openMain(related) {
+      if (active?.related === related) { closeMain(true); return }
+      closeMain(false)
+      const labels = related === headerTrigger ? rootActions : related === sidebarTrigger ? ['Rename','Archive'] : ['Read aloud','Report']
+      related.setAttribute('aria-expanded','true')
+      active = menuRoot(related.getAttribute('aria-controls'), related.getAttribute('aria-label'), labels, related, false)
+      portals.append(active.menu)
+      active.buttons[0].focus({preventScroll:true})
+    }
+    function closeMain(restore) {
+      closeNested(false)
+      if (!active) return
+      const state = active; active = undefined
+      state.related.setAttribute('aria-expanded','false')
+      state.menu.remove()
+      if (restore) state.related.focus({preventScroll:true})
+    }
+
+    for (const trigger of [headerTrigger,sidebarTrigger,messageTrigger]) {
+      trigger.addEventListener('click', () => openMain(trigger))
+      trigger.addEventListener('keydown', event => {
+        if (event.key === 'ArrowDown' && trigger.getAttribute('aria-expanded') === 'false') {
+          event.preventDefault()
+          openMain(trigger)
+        }
+      })
+    }
+    document.addEventListener('keydown', event => {
+      if (event.key !== 'Escape' || !active) return
+      if (nested) closeNested(true)
+      else closeMain(true)
+      event.preventDefault()
+    },true)
+    document.addEventListener('pointerdown', event => {
+      if (active && !active.menu.contains(event.target) && !nested?.menu.contains(event.target) && !active.related.contains(event.target)) closeMain(false)
+    },true)
+    window.traceFixture = {
+      theme(value) { document.documentElement.dataset.theme = value; document.documentElement.style.colorScheme = value },
+      remountMenu() {
+        if (!active) return
+        const {related} = active
+        closeMain(false)
+        openMain(related)
+      },
+      branch(id = 'reply-2') { document.querySelector('[data-message-author-role="assistant"]').dataset.messageId = id },
+    }
+    traceFixture.theme(matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+  </script>
+</body>
+</html>

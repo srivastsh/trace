@@ -81,6 +81,7 @@ async function get<T>(key: string): Promise<T | undefined> {
   return (await session.get(key))[key] as T | undefined;
 }
 let serial = Promise.resolve();
+let revokeSequence = 0;
 function exclusive<T>(fn: () => Promise<T>): Promise<T> {
   const promise = serial.then(fn, fn);
   serial = promise.then(
@@ -365,7 +366,7 @@ async function popupTarget() {
   await ping(d);
   return d;
 }
-async function route(op: string, input: unknown, s: Sender) {
+async function route(op: string, input: unknown, s: Sender, enqueuedAt: number) {
   await setup;
   const area = trustedSender(s);
   if (!area) throw Error('Unsupported sender.');
@@ -393,7 +394,9 @@ async function route(op: string, input: unknown, s: Sender) {
       };
     }
     if (op === 'capture') {
+      if (enqueuedAt !== revokeSequence) throw denied();
       await ping(d);
+      if (enqueuedAt !== revokeSequence) throw denied();
       if (
         (d.temporary !== 'ordinary' && !(d.temporary === 'unknown' && d.manualOrdinary)) ||
         !projectionOk(a.projection, d, MAX_BATCH_BYTES) ||
@@ -677,9 +680,21 @@ async function route(op: string, input: unknown, s: Sender) {
 chrome.runtime.onMessage.addListener((message, s, respond) => {
   if (!record(message) || message.v !== 1 || !bounded(message.op, 64) || !trustedSender(s)) return false;
   const op = message.op;
-  // All mutations and authorization checks run in a defined order. Returning
-  // true keeps the response channel alive until the transaction commits.
-  exclusive(() => route(op, message.args, s)).then(
+  // Revoke queued automatic work at receipt. An unfinished IDB write either
+  // committed first or observes the updated generation in its own transaction.
+  const arg = Array.isArray(message.args) ? message.args[0] : undefined;
+  const revoke =
+    trustedSender(s) === 'library' &&
+    (op === 'clearAll' || (op === 'setSettings' && record(arg) && arg.autoCapture === false));
+  if (revoke) revokeSequence++;
+  const sequence = revokeSequence;
+  const fence = revoke ? db.then((repo) => repo.setSettings({ autoCapture: false })) : Promise.resolve();
+  // Attach a rejection handler immediately if an earlier operation is still active.
+  void fence.catch(() => {});
+  exclusive(async () => {
+    await fence;
+    return route(op, message.args, s, sequence);
+  }).then(
     (data) => respond({ ok: true, data }),
     async (e) => {
       if (

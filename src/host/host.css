@@ -1,0 +1,390 @@
+[data-trace-owned] {
+  --trace-fg: #0d0d0d;
+  --trace-muted: #5d5d5d;
+  --trace-surface: #fff;
+  --trace-border: rgb(0 0 0 / 10%);
+  --trace-hover: rgb(0 0 0 / 6%);
+  --trace-meter-fill: #696969;
+  --trace-font: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --trace-font-size: 14px;
+  --trace-line: 20px;
+  color: var(--trace-fg);
+  font-family: var(--trace-font);
+  font-size: var(--trace-font-size);
+  line-height: var(--trace-line);
+}
+
+[data-trace-owned][data-trace-theme="dark"] {
+  color-scheme: dark;
+  --trace-fg: #ececec;
+  --trace-muted: #b4b4b4;
+  --trace-surface: #2f2f2f;
+  --trace-border: rgb(255 255 255 / 14%);
+  --trace-hover: rgb(255 255 255 / 8%);
+  --trace-meter-fill: #c8c8c8;
+}
+
+[data-trace-owned] *,
+.trace-floating[data-trace-owned] {
+  box-sizing: border-box;
+}
+
+[data-trace-owned] .trace-icon,
+.trace-message-save[data-trace-owned] svg {
+  flex: none;
+  display: block;
+  pointer-events: none;
+}
+
+[data-trace-owned] button,
+button.trace-message-save[data-trace-owned] {
+  appearance: none;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  letter-spacing: inherit;
+}
+
+[data-trace-owned] button:focus-visible {
+  outline: 2px solid var(--trace-muted);
+  outline-offset: -2px;
+}
+
+.trace-menu-group[data-trace-owned] {
+  margin-block: 4px 0;
+  padding-block-start: 4px;
+  border-block-start: 1px solid var(--trace-border);
+}
+
+.trace-menu-group[data-trace-bottom-rule] {
+  margin-block-end: 4px;
+  padding-block-end: 4px;
+  border-block-end: 1px solid var(--trace-border);
+}
+
+[data-trace-owned] .trace-menu-row {
+  display: flex;
+  align-items: center;
+  gap: var(--trace-row-gap, 8px);
+  min-height: var(--trace-row-height, 36px);
+  padding: 6px var(--trace-row-pad-end, 8px) 6px var(--trace-row-pad-start, 8px);
+  width: 100%;
+  border-radius: var(--trace-row-radius, 8px);
+  font-weight: 400;
+  text-align: start;
+}
+
+[data-trace-owned] .trace-menu-row[aria-disabled="true"] {
+  color: var(--trace-muted);
+  cursor: default;
+}
+
+[data-trace-owned] .trace-menu-row:focus,
+[data-trace-owned] .trace-menu-row:hover,
+[data-trace-owned] .trace-menu-row[aria-expanded="true"] {
+  background-color: var(--trace-hover);
+}
+
+[data-trace-owned] .trace-root-row svg:last-child {
+  margin-inline-start: auto;
+  width: 16px;
+  height: 16px;
+}
+
+.trace-floating[data-trace-owned] {
+  position: fixed;
+  inset: auto;
+  z-index: 2147483646;
+  margin: 0;
+  border: 1px solid var(--trace-border);
+  border-radius: 14px;
+  background: var(--trace-surface);
+  box-shadow: 0 6px 22px rgb(0 0 0 / 14%);
+}
+
+.trace-floating[data-trace-theme="dark"] {
+  box-shadow: 0 6px 22px rgb(0 0 0 / 30%);
+}
+
+.trace-flyout[data-trace-owned] {
+  width: min(228px, calc(100vw - 16px));
+  max-height: calc(100dvh - 16px);
+  padding: 4px;
+  overflow: auto;
+}
+
+.trace-flyout[data-trace-placement="inline"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: max-content;
+}
+
+[data-trace-owned] .trace-back-row {
+  display: none;
+}
+
+[data-trace-placement="compact"] .trace-back-row,
+[data-trace-placement="inline"] .trace-back-row {
+  display: flex;
+  margin-block-end: 4px;
+}
+
+.trace-activity[data-trace-owned] {
+  width: min(356px, calc(100vw - 24px));
+  max-height: min(560px, calc(100dvh - 24px));
+  padding: 12px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  font-variant-numeric: tabular-nums;
+}
+
+.trace-notice[data-trace-owned] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: min(336px, calc(100vw - 24px));
+  padding: 7px 8px 7px 12px;
+}
+
+[data-trace-owned] :is(.trace-surface-header, .trace-meter-label) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+[data-trace-owned] .trace-surface-header :is(h1, h2) {
+  margin: 0;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600;
+}
+
+[data-trace-owned] .trace-activity-section {
+  margin-block: 10px;
+}
+
+[data-trace-owned] .trace-activity-section h3 {
+  margin: 0 0 4px;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+}
+
+[data-trace-owned] :is(.trace-pair, .trace-source) {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  padding-block: 2px;
+}
+
+[data-trace-owned] :is(.trace-pair, .trace-source) dd {
+  margin: 0;
+  text-align: end;
+  overflow-wrap: anywhere;
+}
+
+[data-trace-owned] .trace-pair dt {
+  color: var(--trace-muted);
+  flex: none;
+  max-width: 52%;
+}
+
+[data-trace-owned] .trace-source {
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+  line-height: 18px;
+  padding-block: 4px;
+}
+
+[data-trace-owned] .trace-source dd {
+  text-align: start;
+  color: var(--trace-muted);
+}
+
+[data-trace-owned] .trace-source dd span {
+  display: block;
+}
+
+[data-trace-owned] .trace-source code {
+  font-family: ui-monospace, monospace;
+  font-size: 11px;
+}
+
+[data-trace-owned] dl {
+  margin: 0;
+}
+
+[data-trace-owned] .trace-secondary {
+  margin-block: 4px;
+  color: var(--trace-muted);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+[data-trace-owned] .trace-meter-label {
+  color: var(--trace-muted);
+  margin-block-end: 4px;
+  font-size: 12px;
+}
+
+[data-trace-owned] .trace-meter {
+  height: 5px;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: var(--trace-hover);
+}
+
+[data-trace-owned] .trace-meter > div {
+  height: 100%;
+  border-radius: 8px;
+  background-color: var(--trace-meter-fill);
+}
+
+[data-trace-owned] .trace-disclosure summary {
+  padding-block: 4px;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+[data-trace-owned] .trace-disclosure[open] summary {
+  margin-block-end: 4px;
+}
+
+[data-trace-owned] .trace-details {
+  padding-block-start: 4px;
+  border-block-start: 1px solid var(--trace-border);
+}
+
+[data-trace-owned] .trace-warning:not(.trace-notice) {
+  display: flex;
+  align-items: center;
+  padding-block-start: 4px;
+  color: var(--trace-muted);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+[data-trace-owned] .trace-activity-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  border-block-start: 1px solid var(--trace-border);
+  padding-block-start: 8px;
+  margin-block-start: 4px;
+}
+
+[data-trace-owned] .trace-secondary-button,
+[data-trace-owned] .trace-icon-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: center;
+  padding: 4px 8px;
+  min-height: 32px;
+  border: 1px solid var(--trace-border);
+  border-radius: 8px;
+}
+
+[data-trace-owned] .trace-icon-button {
+  width: 32px;
+  flex: none;
+  padding: 0;
+  border: 0;
+}
+
+[data-trace-owned] :is(.trace-secondary-button, .trace-icon-button):hover {
+  background-color: var(--trace-hover);
+}
+
+[data-trace-owned] .trace-secondary-button .trace-icon {
+  width: 16px;
+  height: 16px;
+}
+
+[data-trace-owned] .trace-details > .trace-secondary-button {
+  margin-block-start: 6px;
+}
+
+button.trace-message-save[data-trace-owned] {
+  color: inherit;
+  align-items: center;
+  border-radius: 8px;
+  display: inline-flex;
+  justify-content: center;
+  padding: 0;
+  width: var(--trace-message-control-size, 30px);
+  height: var(--trace-message-control-size, 30px);
+}
+
+button.trace-message-save[data-trace-owned]:is(:hover, :focus-visible) {
+  background-color: var(--trace-hover);
+}
+
+button.trace-message-save[data-trace-owned]:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: -2px;
+}
+
+[data-trace-message-row]:focus-within {
+  opacity: 1;
+  visibility: visible;
+}
+
+@media (pointer: coarse) {
+  [data-trace-owned] :is(.trace-menu-row, .trace-secondary-button, .trace-icon-button) {
+    min-height: 44px;
+  }
+  [data-trace-owned] .trace-icon-button {
+    width: 44px;
+  }
+}
+
+.trace-popup-document {
+  color-scheme: light dark;
+  background: light-dark(#fff, #2f2f2f);
+}
+
+.trace-popup-document body {
+  margin: 0;
+}
+
+.trace-popup[data-trace-owned] {
+  min-width: 296px;
+  width: 296px;
+  padding: 8px;
+  background-color: var(--trace-surface);
+}
+
+.trace-popup[data-trace-owned] .trace-surface-header {
+  padding-inline: 8px;
+}
+
+.trace-popup[data-trace-owned] > .trace-secondary {
+  padding-inline: 8px;
+}
+
+.trace-popup-divider {
+  border: 0;
+  border-block-start: 1px solid var(--trace-border);
+  margin: 4px 0;
+}
+
+.trace-popup-activity[data-trace-owned] {
+  padding: 12px;
+}
+
+.trace-popup-activity[data-trace-owned] .trace-surface-header {
+  padding-inline: 0;
+}
+
+.trace-popup-activity[data-trace-owned] > .trace-secondary {
+  padding-inline: 0;
+}

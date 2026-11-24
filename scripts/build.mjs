@@ -50,7 +50,6 @@ await build({
     rolldownOptions: { input: { library: 'library.html', popup: 'popup.html' } },
   },
 });
-await cp('public', outDir, { recursive: true });
 await cp('src/host/host.css', path.join(outDir, 'host.css'));
 const licenseDir = path.join(outDir, 'licenses');
 await mkdir(licenseDir, { recursive: true });
