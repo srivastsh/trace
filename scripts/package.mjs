@@ -1,5 +1,14 @@
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, readFileSync, readdirSync, writeFileSync, statSync, rmSync, renameSync } from 'node:fs';
+import {
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  writeFileSync,
+  statSync,
+  rmSync,
+  renameSync,
+  utimesSync,
+} from 'node:fs';
 import { createHash } from 'node:crypto';
 import path from 'node:path';
 
@@ -28,10 +37,36 @@ if (JSON.stringify(tested) !== JSON.stringify(current)) {
 const manifest = JSON.parse(readFileSync('dist/manifest.json', 'utf8'));
 const prefix = 'Trace-' + manifest.version;
 mkdirSync('release', { recursive: true });
+// Use the latest production-input commit for ZIP timestamps. Documentation
+// and new validation evidence can then be packaged without changing the bytes
+// of an already tested extension ZIP.
+const sourceTime = Number(
+  execFileSync(
+    'git',
+    [
+      'log',
+      '-1',
+      '--format=%ct',
+      '--',
+      'manifest.json',
+      'src',
+      'scripts/build.mjs',
+      'package.json',
+      'package-lock.json',
+      'library.html',
+      'popup.html',
+      'NOTICE',
+      'LICENSE',
+    ],
+    { encoding: 'utf8' },
+  ).trim(),
+);
+for (const name of Object.keys(current)) utimesSync(path.join('dist', name), sourceTime, sourceTime);
 const draft = '.' + prefix + '-' + process.pid + '.zip';
 try {
   execFileSync('zip', ['-q', '-X', '../release/' + draft, '-@'], {
     cwd: 'dist',
+    env: { ...process.env, TZ: 'UTC' },
     input: Object.keys(current).join('\n') + '\n',
   });
   renameSync('release/' + draft, 'release/' + prefix + '.zip');
