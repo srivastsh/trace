@@ -1,0 +1,62 @@
+name: Publish Trace 0.1.0
+on:
+  push:
+    branches: [main]
+    tags: [v0.1.0]
+    paths:
+      - releases/v0.1.0/Trace-0.1.0.zip
+      - .github/workflows/release-0.1.0.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-trace-0.1.0
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/tags/v0.1.0'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verify the installed production bytes and assemble downloads
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir release
+          cp releases/v0.1.0/Trace-0.1.0.zip release/
+          cd release
+          echo 'e7bd2476930d62514e25c1a2eb2cad03cdde2c12ace5b165713e01ec364e813e  Trace-0.1.0.zip' | sha256sum --check
+          git -C .. archive --format=zip --prefix=Trace-0.1.0-source/ --output=release/Trace-0.1.0-source.zip "$GITHUB_SHA"
+          sha256sum Trace-0.1.0.zip Trace-0.1.0-source.zip > SHA256SUMS
+          python3 - <<'PY'
+          import hashlib, json, os, zipfile
+          from pathlib import Path
+          with zipfile.ZipFile("Trace-0.1.0.zip") as archive:
+              contents = {name: hashlib.sha256(archive.read(name)).hexdigest() for name in sorted(archive.namelist())}
+              version = json.loads(archive.read("manifest.json"))["version"]
+          if version != "0.1.0" or len(contents) != 18:
+              raise ValueError("Unexpected extension contents")
+          metadata = {"commit": os.environ["GITHUB_SHA"], "version": version, "files": contents}
+          Path("build.json").write_text(json.dumps(metadata, indent=2) + "\n")
+          PY
+      - name: Publish the versioned GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh release view v0.1.0 --json isDraft --jq .isDraft > "$RUNNER_TEMP/trace-release-status"; then
+            if [ "$(cat "$RUNNER_TEMP/trace-release-status")" = false ]; then
+              exit 0
+            fi
+          else
+            gh release create v0.1.0 --draft --target "$GITHUB_SHA" --title "Trace 0.1.0" \
+              --notes "Download Trace-0.1.0.zip for the unpacked browser extension. The source archive, file hashes, validation results and update instructions accompany this release. Automatic saving starts off."
+          fi
+          gh release upload v0.1.0 release/Trace-0.1.0.zip release/Trace-0.1.0-source.zip release/SHA256SUMS release/build.json --clobber
+          gh release edit v0.1.0 --draft=false --latest

@@ -10,6 +10,8 @@ Trace is a local-first MV3 extension for ChatGPT on Chromium. It adds **Trace â€
 4. For ongoing capture, open **Settings** from the current conversation. Choose the destination and retention, explicitly enable saving for that collection and this device, and bind the current document. An unrecognized or temporary chat stays paused. A new document requires fresh resolution. Automatic capture starts off.
 5. Use **Trace backup** in the library to review what will be included and download a local JSON file. On restore, review its counts and destination, then complete or resume the import. Imported material never grants capture consent. Backups contain plain text. A conversation export contains only its selected transcript and provenance.
 
+See the [light and dark screenshots](docs/evidence/README.md) for the conversation menu, Activity, saved library and handoff editor.
+
 ## Build and validate
 
 Use Node 22.12 or a supported later LTS and the checked-in dependency lock. Install from the lock before running the following commands.

@@ -18,7 +18,7 @@ The fixtures checked one Trace submenu, native actions, the reported reply model
 
 A manual Chrome check at actual 200% browser zoom showed all six Trace items. Escape returned focus to Trace and then to the header trigger. Zoom was restored to 100% after the test.
 
-[Native fixture report](trace-isolated-browser-summary.json) · [Light menu](trace-menu-light.png) · [Dark menu](trace-menu-dark.png) · [Light Activity](trace-activity-light.png) · [Dark Activity](trace-activity-dark.png)
+[Native fixture report](trace-isolated-browser-summary.json)
 
 ## Manual checks in the signed-out Chrome profile
 
@@ -31,9 +31,18 @@ A manual Chrome check at actual 200% browser zoom showed all six Trace items. Es
 | Local deletion and restore | The confirmation described removal of the transcript, associated notes and saved excerpts, and handoff evidence. The library became empty and separately authored handoff notes remained. Restore completed all seven reported steps into a separate collection. Its copy was readable and automatic saving stayed off. |
 | Toolbar fallback | The popup on an unsupported page showed unavailable current-chat context, disabled Save and Export, and exposed Local library and Settings. The library action opened successfully. |
 
-All archive tests used synthetic content on the earlier build. A full browser restart and a forced service-worker stop remain unmeasured. The dark library and both handoff screenshots remain pending.
+All archive tests used synthetic content on the earlier build. A full browser restart and a forced service-worker stop remain unmeasured.
 
-[Light library](trace-library-light.png)
+## Synthetic screenshots
+
+The menu and Activity screenshots show the corrected build. The library and handoff screenshots show the synthetic Miata Viewer fixture and its restored draft from the isolated Chrome profile.
+
+| Surface | Light | Dark |
+| --- | --- | --- |
+| Conversation menu and Trace submenu | [Light](trace-menu-light.png) | [Dark](trace-menu-dark.png) |
+| Activity | [Light](trace-activity-light.png) | [Dark](trace-activity-dark.png) |
+| Local library | [Light](trace-library-light.png) | [Dark](trace-library-dark.png) |
+| Handoff editor | [Light](trace-handoff-light.png) | [Dark](trace-handoff-dark.png) |
 
 ## Browser latency
 

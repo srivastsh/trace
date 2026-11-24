@@ -4,7 +4,7 @@ Trace 0.1.0 has stable extension ID `nmmlhlhpfpfiehpoccmloghalfgfmaol`. The rele
 
 The primary menu was verified in Dia 1.57.1 (Chromium 157.0.8103.79). The sequence was Move to project, Trace, Archive and Delete. Activity transferred focus to its Close button and returned it to Chat actions on Escape. Settings and Local library opened from the same menu.
 
-Synthetic tests used an isolated Chrome 158 profile, separate from the live compatibility check. Screenshots and downloadable QA evidence contain synthetic project data only. The earlier 18-file inventory with digest `08f4234e22f16fb9ffaf1c1b745476d249b5889f628b579c318f01a69baeb4a6` provided the extended archive/reload workflow and performance measurements. The corrected build changed the isolated page UI and the popup assets; its observer, database, library, restore and search files were identical.
+Synthetic tests used an isolated Chrome 158 profile, separate from the live compatibility check. Eight [light and dark screenshots](evidence/README.md) show the menu, Activity, library and handoff editor using synthetic project data. All six menu actions and keyboard focus return were also verified at actual 200% Chrome zoom. The earlier 18-file inventory with digest `08f4234e22f16fb9ffaf1c1b745476d249b5889f628b579c318f01a69baeb4a6` provided the extended archive/reload workflow and performance measurements. The corrected build changed the isolated page UI and the popup assets; its observer, database, library, restore and search files were identical.
 
 ## Implementation verification
 
