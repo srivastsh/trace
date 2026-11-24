@@ -1,5 +1,7 @@
 # Trace
 
+![Trace extension icon](src/icons/trace-48.png)
+
 Trace is a local-first MV3 extension for ChatGPT on Chromium. It adds **Trace ›** to the current conversation's **Chat actions** menu. Activity shows reported reply metadata. Save, Export, and Prepare handoff open a review page. Local library and Settings remain accessible from the toolbar even when the host menu changes.
 
 ## Use
@@ -30,9 +32,11 @@ The package command expects a clean, committed source tree and a current product
 
 ## Install, update, disable and remove
 
+Download [Trace 0.1.1](https://github.com/srivastsh/trace/releases/tag/v0.1.1) and choose `Trace-0.1.1.zip` for the extension. Version 0.1.1 adds the Trace icon to the toolbar and extension manager.
+
 The stable public manifest key identifies Trace as `nmmlhlhpfpfiehpoccmloghalfgfmaol`. For a fresh unpacked installation, extract the production ZIP into a permanent folder, such as `~/Applications/Trace/extension`. In Dia, choose **Extensions → Manage Extensions**, enable Developer mode where available, and use **Load unpacked** to select the directory containing `manifest.json`. Leave that folder in place. Open a fresh ChatGPT tab after installation.
 
-For updates, back up the archive, keep a copy of the previous validated folder, replace the files inside the same stable directory, and use **Reload** on the existing Trace entry. Verify its ID, version, settings and archive. If rollback is needed, restore the previous files at the same path and reload. Reload an existing ChatGPT tab only when any draft is safe. Updates to this private unpacked install are manual.
+For updates, back up the archive, keep a copy of the previous validated folder, replace the files inside the same stable directory, and use **Reload** on the existing Trace entry. Verify its ID, version, settings and archive. If rollback is needed, restore the previous files at the same path and reload. Reload an existing ChatGPT tab only when any draft is safe. Unpacked installations receive updates manually.
 
 To disable, switch Trace off in Manage Extensions and open a fresh ChatGPT tab. To remove, make a backup, then use **Remove** on the Trace entry. Chromium may discard extension-origin storage on uninstall. **Delete local copy** and **Clear Trace data** apply to this device. ChatGPT retains its separate server history.
 

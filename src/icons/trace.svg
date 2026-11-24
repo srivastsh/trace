@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-labelledby="title description">
+  <title id="title">Trace</title>
+  <desc id="description">A white T with two route markers on a rounded graphite tile.</desc>
+  <rect id="tile" x="4" y="4" width="120" height="120" rx="28" fill="#27282B" stroke="none"/>
+  <rect id="keyline" x="5" y="5" width="118" height="118" rx="27" fill="none" stroke="#6B6D73" stroke-width="2"/>
+  <g id="route">
+    <path d="M38 42H89M63 42V69C63 79 70 87 80 87" fill="none" stroke="#FAFAF9" stroke-width="11" stroke-linecap="round"/>
+    <circle cx="38" cy="42" r="8.5" fill="#FAFAF9" stroke="none"/>
+    <circle cx="80" cy="87" r="10" fill="#FAFAF9" stroke="none"/>
+    <circle cx="80" cy="87" r="4" fill="#27282B" stroke="none"/>
+  </g>
+</svg>

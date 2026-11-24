@@ -20,7 +20,7 @@ const runner = {
   manifest_version: 3,
   name: 'Trace isolated fixture runner',
   description: 'Local testing in the separate signed-out Trace QA browser profile.',
-  version: '0.1.0',
+  version: production.version,
   incognito: 'not_allowed',
   permissions: ['debugger', 'tabs'],
   options_ui: { page: 'qa.html', open_in_tab: true },

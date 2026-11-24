@@ -1,4 +1,10 @@
-# Trace 0.1.0 validation
+# Trace release validation
+
+## 0.1.1 extension icon
+
+The toolbar and extension manager use the same graphite and white Trace mark. The source tree includes the editable SVG and the four PNGs supplied to Chromium at 16, 32, 48 and 128 pixels. The public key and extension ID are the same as in 0.1.0. To update, replace the files in the existing unpacked folder and reload its Trace entry.
+
+## 0.1.0 validation
 
 Trace 0.1.0 has stable extension ID `nmmlhlhpfpfiehpoccmloghalfgfmaol`. The release contains 18 production files, with a sorted SHA-256 inventory digest of `1d5a9c44415678c9c3e923287fc6bd18d5d65199a5039f46ab0fdcfed4e38114`. A clean checkout and locked npm installation reproduced all packaged assets byte-for-byte.
 

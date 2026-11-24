@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Trace",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Inspect reported reply activity and keep selected ChatGPT conversations on this device.",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlQDBqjJOUHz6Q6MG2b6ODDqL+CWQn4TcgcJDoB9fw6Syl3cxuApDBckXbp8j3SdgshIpRTW9F+7rSv4rDFLiJnwLFnHNBkiQtbhm7/hue8bcqfj7jsbaeWuIU8PJiDAgxPvFpJo9aXxD6Y6KuPVj/ZPIdW4MYAYDXhPEfsU2YCHUHNF0XKU0FtR+oXG5REs0iNbLnMnOUq/HFoet7/0Ep8Ft4W/OszPRx5CNFDNn+fC1aFaPtvYMov4IHZvdIs2xmDGoApgIAjyQH6YefdGYv39q0qtecmkiQ0mdS1U6nVuXwbSmUImigJB+89KcCyZTCjW9INs+U35a6hBtMsnROQIDAQAB",
   "minimum_chrome_version": "120",
@@ -10,9 +10,21 @@
     "storage",
     "alarms"
   ],
+  "icons": {
+    "16": "icons/trace-16.png",
+    "32": "icons/trace-32.png",
+    "48": "icons/trace-48.png",
+    "128": "icons/trace-128.png"
+  },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Trace"
+    "default_title": "Trace",
+    "default_icon": {
+      "16": "icons/trace-16.png",
+      "32": "icons/trace-32.png",
+      "48": "icons/trace-48.png",
+      "128": "icons/trace-128.png"
+    }
   },
   "background": {
     "service_worker": "background.js",

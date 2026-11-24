@@ -65,4 +65,8 @@ await cp('LICENSE', path.join(outDir, 'LICENSE.txt'));
 const manifest = JSON.parse(await readFile('manifest.json', 'utf8'));
 const pkg = JSON.parse(await readFile('package.json', 'utf8'));
 if (manifest.version !== pkg.version) throw Error('Manifest version mismatch');
+await mkdir(path.join(outDir, 'icons'), { recursive: true });
+for (const iconPath of Object.values(manifest.icons)) {
+  await cp(path.join('src', iconPath), path.join(outDir, iconPath));
+}
 await writeFile(path.join(outDir, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
