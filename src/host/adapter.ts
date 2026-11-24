@@ -1,5 +1,5 @@
 /** Semantic adapter for the current-conversation controls. */
-export const HOST_ADAPTER_VERSION = 'chatgpt-menu-1';
+export const HOST_ADAPTER_VERSION = 'chatgpt-menu-2';
 
 const TESTED_TRIGGER = [
   'button[data-testid="conversation-header-actions-menu"]',
@@ -73,26 +73,48 @@ export function focusableNativeRows(menu: HTMLElement) {
     && row.getAttribute('aria-disabled') !== 'true' && (row.tabIndex >= 0 || row.hasAttribute('tabindex')) && visible(row));
 }
 
+const destructiveLabel = /^(?:archive|delete)(?: (?:chat|conversation))?$/i;
+const destructiveTestId = /^(?:(?:chat|conversation)(?:-header)?-)?(?:archive|delete)(?:-(?:chat|conversation))?(?:-(?:button|menu-item|action))?$/i;
+const shortcutContent = '[aria-hidden="true"],[hidden],svg,kbd,[data-shortcut],[data-keyboard-shortcut]';
+
+function actionText(element: HTMLElement) {
+  const walker = element.ownerDocument.createTreeWalker(element, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      const ignored = node.parentElement?.closest(shortcutContent);
+      return ignored && element.contains(ignored) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
+    },
+  });
+  const segments: string[] = [];
+  while (walker.nextNode()) segments.push(walker.currentNode.nodeValue || '');
+  return segments.join(' ');
+}
+
 function isDestructive(row: HTMLElement) {
-  const testId = row.dataset.testid || '';
-  const label = (row.getAttribute('aria-label') || row.textContent || '').trim();
-  return /(?:^|[-_])(archive|delete)(?:[-_]|$)/i.test(testId) || /^(Archive|Delete)$/i.test(label);
+  if (destructiveTestId.test(row.dataset.testid || '')) return true;
+  const labelledBy = row.getAttribute('aria-labelledby')?.split(/\s+/).filter(Boolean) ?? [];
+  const accessibleName = labelledBy.map((id) => row.ownerDocument.getElementById(id)?.textContent?.trim() ?? '').join(' ');
+  return [accessibleName, row.getAttribute('aria-label'), row.getAttribute('data-text-value'), row.title, actionText(row)]
+    .some((label) => destructiveLabel.test(label?.trim().replace(/\s+/g, ' ') ?? ''));
 }
 
 export function insertionPoint(menu: HTMLElement): { parent: HTMLElement; before: HTMLElement | null; bottomRule: boolean } {
-  const destructive = menuRows(menu).find(isDestructive);
+  // Some layouts use an ordinary button for an action alongside semantic menuitems.
+  const rows = Array.from(menu.querySelectorAll<HTMLElement>(`${MENU_ROW}, button:not([role])`))
+    .filter((row) => row.closest('[role="menu"]') === menu && !row.closest('[data-trace-owned]')
+      && (!row.closest(MENU_ROW) || row.matches(MENU_ROW)));
+  const destructive = rows.find(isDestructive);
   if (!destructive?.parentElement) return { parent: menu, before: null, bottomRule: false };
 
   let boundary = destructive;
-  // Preserve a separate native destructive group when the host uses one.
+  // Keep host action groups intact, including a group containing only Archive.
   while (boundary.parentElement && boundary.parentElement !== menu
     && boundary.parentElement.getAttribute('role') === 'group'
-    && menuRows(menu).filter((row) => boundary.parentElement?.contains(row)).every(isDestructive)) {
+    && rows.filter((row) => boundary.parentElement?.contains(row)).every(isDestructive)) {
     boundary = boundary.parentElement;
   }
   const parent = boundary.parentElement ?? menu;
   const separator = boundary.previousElementSibling;
-  if (separator instanceof HTMLElement && separator.getAttribute('role') === 'separator') {
+  if (separator instanceof HTMLElement && separator.matches('[role="separator"], hr')) {
     return { parent, before: separator, bottomRule: false };
   }
   return { parent, before: boundary, bottomRule: true };

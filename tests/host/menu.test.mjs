@@ -43,7 +43,9 @@ test('UI-02 traverses the native menu and Trace via keyboard, retaining native s
   await page.keyboard.press('ArrowDown');
   await focused(row);
   await page.keyboard.press('ArrowDown');
-  await focused(root.getByRole('menuitem', { name: 'Archive', exact: true }));
+  const archive = root.getByRole('menuitem', { name: 'Archive', exact: true });
+  assert.equal(await archive.textContent(), 'ArchiveA', 'The fixture reproduces the raw live Archive shortcut markup.');
+  await focused(archive);
   await page.keyboard.press('ArrowUp');
   await focused(row);
   await page.keyboard.press('Space');
@@ -57,11 +59,13 @@ test('UI-02 traverses the native menu and Trace via keyboard, retaining native s
   await focused(row);
   await page.keyboard.press('Enter');
   await menu.waitFor();
+  await page.evaluate(() => window.traceFixture.deferNativeClose(120));
   await page.keyboard.press('Enter');
   const panel = page.getByRole('dialog', { name: 'Activity', exact: true });
   await panel.waitFor();
   await root.waitFor({ state: 'hidden' });
   await focused(panel.getByRole('button', { name: 'Close Activity' }));
+  assert.equal(await trigger.getAttribute('aria-expanded'), 'false');
   await page.keyboard.press('Escape');
   await panel.waitFor({ state: 'hidden' });
   await focused(trigger);

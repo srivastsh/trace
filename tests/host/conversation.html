@@ -31,7 +31,8 @@
     .fixture-native { display:flex; align-items:center; text-align:start; gap:9px; min-height:36px; width:100%; padding:6px 8px; outline:0 }
     .fixture-native:focus { outline:1px solid var(--border-light); outline-offset:-1px }
     .fixture-native svg { flex:none }
-    .fixture-native .chevron { margin-left:auto }
+    .fixture-native :is(.chevron, .shortcut) { margin-left:auto }
+    .fixture-native .shortcut { color:var(--text-secondary); white-space:nowrap; font:11px/16px system-ui,sans-serif }
     [role="separator"] { margin:4px 0; height:1px; background:var(--border-light) }
     @media(max-width:660px) { aside{display:none} header,main{margin-left:0} #composer{width:calc(100% - 36px);left:50%} }
   </style>
@@ -93,20 +94,29 @@
     ]
     const rootActions = ['Pin', 'Rename', 'Share', 'Lock', 'Move to project', 'Archive', 'Delete']
     const projectActions = ['Miata', 'Transit']
-    let active, nested
+    let active, nested, nativeExitDelay = 0
     let typed = '', lastTypedAt = 0
 
     function nativeButton(label, index, isSubmenu) {
-      const button = document.createElement('button')
+      const button = document.createElement(index >= 5 ? 'div' : 'button')
       button.className = 'fixture-native'
-      button.type = 'button'
+      if (button instanceof HTMLButtonElement) button.type = 'button'
       button.tabIndex = -1
       button.role = 'menuitem'
       const svg = document.createElementNS('http://www.w3.org/2000/svg','svg')
       for (const [attr, val] of Object.entries({viewBox:'0 0 20 20',width:'18',height:'18',fill:'none',stroke:'currentColor','stroke-width':'1.5','stroke-linecap':'round','stroke-linejoin':'round','aria-hidden':'true'})) svg.setAttribute(attr,val)
       const path = document.createElementNS(svg.namespaceURI,'path')
       path.setAttribute('d',paths[index % paths.length]); svg.append(path)
-      button.append(svg, document.createTextNode(label))
+      button.append(svg)
+      if (label === 'Archive' && index === 5) {
+        const text = document.createElement('span')
+        text.textContent = label
+        const shortcut = document.createElement('span')
+        shortcut.className = 'shortcut'
+        shortcut.setAttribute('aria-hidden','true')
+        shortcut.textContent = 'A'
+        button.append(text,shortcut)
+      } else button.append(document.createTextNode(label))
       if (isSubmenu) {
         button.setAttribute('aria-haspopup','menu')
         button.setAttribute('aria-expanded','false')
@@ -146,6 +156,9 @@
         }
         if (event.key === 'ArrowLeft' && isNested) {
           event.preventDefault(); closeNested(true); return
+        }
+        if (index >= 0 && !(event.target instanceof HTMLButtonElement) && ['Enter',' '].includes(event.key)) {
+          event.preventDefault(); event.target.click(); return
         }
         let next
         if (event.key === 'ArrowDown') next = buttons[(index + 1) % buttons.length]
@@ -194,8 +207,17 @@
       if (!active) return
       const state = active; active = undefined
       state.related.setAttribute('aria-expanded','false')
-      state.menu.remove()
-      if (restore) state.related.focus({preventScroll:true})
+      if (restore && nativeExitDelay) {
+        const delay = nativeExitDelay
+        nativeExitDelay = 0
+        setTimeout(() => {
+          state.menu.remove()
+          setTimeout(() => state.related.focus({preventScroll:true}), 0)
+        }, delay)
+      } else {
+        state.menu.remove()
+        if (restore) state.related.focus({preventScroll:true})
+      }
     }
 
     for (const trigger of [headerTrigger,sidebarTrigger,messageTrigger]) {
@@ -218,6 +240,7 @@
     },true)
     window.traceFixture = {
       theme(value) { document.documentElement.dataset.theme = value; document.documentElement.style.colorScheme = value },
+      deferNativeClose(milliseconds) { nativeExitDelay = milliseconds },
       remountMenu() {
         if (!active) return
         const {related} = active

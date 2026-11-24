@@ -225,6 +225,25 @@ const openMenu = async driver => {
   await driver.element(submenuSelector);
 };
 
+async function nativeMenuOrder(driver) {
+  const order = await driver.evaluate(selector => {
+    const trigger = document.querySelector(selector);
+    const menu = document.getElementById(trigger.getAttribute('aria-controls'));
+    return [...menu.querySelectorAll('[role="menuitem"]')]
+      .filter(row => row.closest('[role="menu"]') === menu && row.getClientRects().length)
+      .map(row => {
+        const copy = row.cloneNode(true);
+        copy.querySelectorAll('[aria-hidden="true"],[hidden]').forEach(child => child.remove());
+        return (row.getAttribute('aria-label') || copy.textContent).replace(/\s+/g, ' ').trim();
+      });
+  }, headingSelector);
+  const expected = ['Move to project', 'Trace', 'Archive', 'Delete'];
+  const positions = expected.map(label => order.indexOf(label));
+  assert(positions.every((index, i) => index >= 0 && (i === 0 || index > positions[i - 1])),
+    `Expected Move to project < Trace < Archive < Delete. Observed ${order.join(' | ')}.`);
+  return order;
+}
+
 async function hostKeyboard(driver) {
   const focusedLabel = label => waitFor(
     () => driver.evaluate(label => {
@@ -232,7 +251,7 @@ async function hostKeyboard(driver) {
       const text = [...active.childNodes]
         .filter(node => !(node instanceof Element && node.getAttribute('aria-hidden') === 'true'))
         .map(node => node.textContent).join('').trim();
-      return text === label;
+      return text === label || (label === 'Archive' && /^Archive\b/.test(text));
     }, label), `Keyboard focus did not reach ${label}.`);
   const focusTrigger = () => driver.evaluate(selector => document.querySelector(selector).focus(), headingSelector);
 
@@ -337,8 +356,9 @@ async function fixtureChecks(theme, report) {
     await driver.click(headingSelector);
     await driver.element(traceSelector, 'Trace');
     assert((await driver.elements(traceSelector, 'Trace')).length === 1, 'Expected just one Trace menu row.');
+    const nativeOrder = await nativeMenuOrder(driver);
     for (const native of ['Pin', 'Rename', 'Share', 'Lock', 'Move to project', 'Archive', 'Delete']) {
-      await driver.element(traceSelector, native);
+      assert(nativeOrder.some(item => item.startsWith(native)), `Missing native ${native} action.`);
     }
     await driver.click(traceSelector, 'Trace');
     await driver.element(submenuSelector);
@@ -382,7 +402,7 @@ async function fixtureChecks(theme, report) {
       stageTab = await waitFor(async () => (await stages())[0], 'A trusted Save chat click did not open a production-origin review.');
     }
     driver.assertNetwork();
-    return { requests: driver.requestLog };
+    return { requests: driver.requestLog, nativeMenuOrder: nativeOrder };
   } finally {
     if (stageTab) await chrome.tabs.remove(stageTab.id).catch(() => {});
     await driver.close();

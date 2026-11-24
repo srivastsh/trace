@@ -33,10 +33,19 @@ test('the unpacked extension mounts only the current-chat menu and preserves nat
   const nativeMenu = page.getByRole('menu', { name: 'Chat actions', exact: true });
   await nativeMenu.waitFor();
   for (const label of ['Pin', 'Rename', 'Share', 'Lock', 'Move to project', 'Archive', 'Delete']) {
-    await nativeMenu.getByRole('menuitem', { name: label, exact: true }).waitFor();
+    const name = label === 'Archive' ? /^Archive\b/ : label;
+    await nativeMenu.getByRole('menuitem', { name, exact: true }).waitFor();
   }
   await traceItem(page).waitFor();
   assert.equal(await traceItem(page).count(), 1);
+  const order = await nativeMenu.getByRole('menuitem').evaluateAll(rows => rows.map(row => {
+    const copy = row.cloneNode(true);
+    copy.querySelectorAll('[aria-hidden="true"],[hidden]').forEach(child => child.remove());
+    return (row.getAttribute('aria-label') || copy.textContent).replace(/\s+/g, ' ').trim();
+  }));
+  const orderedLabels = ['Move to project', 'Trace', 'Archive', 'Delete'];
+  const positions = orderedLabels.map(label => order.indexOf(label));
+  assert.ok(positions.every((index, i) => index >= 0 && (i === 0 || index > positions[i - 1])), order.join(' | '));
   await traceItem(page).focus();
   await page.keyboard.press('ArrowRight');
   const actions = page.getByRole('menu', { name: 'Trace actions', exact: true });

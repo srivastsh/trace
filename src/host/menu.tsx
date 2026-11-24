@@ -119,6 +119,7 @@ export function mountHost(options: HostOptions) {
   let validatedTrigger: HTMLButtonElement | undefined;
   let layoutFrame = 0;
   let updateFrame = 0;
+  let activityFocusFrame = 0;
   let alive = true;
   const warned = new Set<string>();
   const lifecycle = new AbortController();
@@ -195,6 +196,37 @@ export function mountHost(options: HostOptions) {
       });
   }
 
+  function cancelActivityFocus() {
+    if (!activityFocusFrame) return;
+    window.cancelAnimationFrame(activityFocusFrame);
+    activityFocusFrame = 0;
+  }
+
+  function afterMenuDismisses(state: MenuState, callback: () => void) {
+    cancelActivityFocus();
+    const deadline = performance.now() + 400;
+    const check = (now: number) => {
+      if (!alive || !state.trigger.isConnected || state.path !== location.pathname) {
+        activityFocusFrame = 0;
+        return;
+      }
+      const hidden = !state.menu.isConnected || state.menu.hidden || state.menu.getClientRects().length === 0
+        || getComputedStyle(state.menu).visibility === 'hidden';
+      if (hidden || now >= deadline && state.trigger.getAttribute('aria-expanded') === 'false') {
+        // Native focus restoration can be deferred until after the exit animation.
+        activityFocusFrame = window.requestAnimationFrame(() => {
+          activityFocusFrame = 0;
+          const focus = document.activeElement;
+          if (alive && state.trigger.getAttribute('aria-expanded') !== 'true'
+            && (!focus || focus === document.body || focus === state.trigger || state.menu.contains(focus))) callback();
+        });
+        return;
+      }
+      activityFocusFrame = now < deadline ? window.requestAnimationFrame(check) : 0;
+    };
+    activityFocusFrame = window.requestAnimationFrame(check);
+  }
+
   function choose(action: Action, event: Event, state: MenuState) {
     if (!event.isTrusted || state !== menuState) return;
     if (!globalAction(action) && (state.path !== location.pathname || !sameContext(state.context, options.getContext()))) {
@@ -212,8 +244,8 @@ export function mountHost(options: HostOptions) {
     closeFlyout(false);
     closeNativeMenu(state);
     if (action === 'activity') {
-      window.requestAnimationFrame(() => {
-        if (alive && state.path === location.pathname && sameContext(state.context, options.getContext())) {
+      afterMenuDismisses(state, () => {
+        if (state.path === location.pathname && sameContext(state.context, options.getContext())) {
           openActivity(state.trigger, state.context);
         }
       });
@@ -553,6 +585,7 @@ export function mountHost(options: HostOptions) {
   window.visualViewport?.addEventListener('resize', reposition, { signal, passive: true });
   window.visualViewport?.addEventListener('scroll', reposition, { signal, passive: true });
   document.addEventListener('pointerdown', (event) => {
+    if (event.isTrusted) cancelActivityFocus();
     const target = event.target;
     if (!(target instanceof Element)) return;
     if (menuState?.surface && !menuState.menu.contains(target)) closeFlyout(false);
@@ -562,6 +595,7 @@ export function mountHost(options: HostOptions) {
     }
   }, { signal, capture: true, passive: true });
   window.addEventListener('keydown', (event) => {
+    if (event.isTrusted) cancelActivityFocus();
     if (event.key !== 'Escape' || !(event.target instanceof Node)) return;
     if (menuState?.surface?.contains(event.target)) {
       event.preventDefault();
@@ -585,9 +619,10 @@ export function mountHost(options: HostOptions) {
       const trigger = findTrigger();
       if (!trigger || !sameContext(context, options.getContext())) return false;
       if (menuState) {
+        const state = menuState;
         closeFlyout(false);
-        closeNativeMenu(menuState);
-        window.requestAnimationFrame(() => {
+        closeNativeMenu(state);
+        afterMenuDismisses(state, () => {
           if (sameContext(context, options.getContext())) openActivity(trigger, context);
         });
         return true;
@@ -603,6 +638,7 @@ export function mountHost(options: HostOptions) {
       stopMessages();
       if (layoutFrame) window.cancelAnimationFrame(layoutFrame);
       if (updateFrame) window.cancelAnimationFrame(updateFrame);
+      cancelActivityFocus();
       closeActivity(false);
       clearNotice();
       detachMenu();
